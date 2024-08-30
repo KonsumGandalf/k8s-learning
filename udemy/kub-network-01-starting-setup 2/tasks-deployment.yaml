@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: udemy-tasks
+  namespace: udemy
+  labels:
+    app: udemy-tasks
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: udemy-tasks
+  template:
+    metadata:
+      labels:
+        app: udemy-tasks
+    spec:
+      containers:
+      - name: tasks
+        image: codinggandalf/k8s-udemy:networking-tasks-01
+        # imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+          name: tasks-port
+        envFrom:
+        - configMapRef:
+            name: tasks-config-map
+        volumeMounts:
+        - mountPath: /app/tasks
+          name: tasks-volume
+      volumes:
+      - name: tasks-volume
+        persistentVolumeClaim:
+          claimName: tasks-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tasks-service
+  namespace: udemy
+spec:
+  selector:
+    app: udemy-tasks
+  ports:
+  - protocol: TCP
+    port: 8000
+    targetPort: tasks-port
+  type: LoadBalancer

@@ -1,0 +1,11 @@
+version: "3.8"
+services:
+  stories:
+    image: codinggandalf/k8s-udemy:video-02-02
+    build: .
+    volumes:
+      - stories:/app/story
+    ports:
+      - 80:3000
+volumes:
+  stories: 

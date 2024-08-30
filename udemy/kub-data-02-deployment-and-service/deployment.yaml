@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: story-deployment
+  namespace: udemy-2
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: story
+  template:
+    metadata:
+      labels:
+        app: story
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: role
+                operator: In
+                values:
+                - edge
+      containers:
+      - name: story
+        image: codinggandalf/k8s-udemy:video-02-02
+        # imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+          name: story-port
+        volumeMounts:
+        - mountPath: /app/story-config-map
+          name: pvc-story-volume
+        #env:
+        #- name: FOLDER_PATH
+        #  value: story
+        #- name: FOLDER_PATH
+        #  valueFrom:
+        #    configMapKeyRef:
+        #      key: folder
+        #      name: udemy-env
+        envFrom:
+        - configMapRef:
+            name: udemy-env
+      volumes:
+      - name: story-volume
+        emptyDir: {}
+      - name: sync-story-volume
+        hostPath:
+          path: /data
+          type: DirectoryOrCreate
+      - name: pvc-story-volume
+        persistentVolumeClaim:
+          claimName: story-pvc

@@ -1,0 +1,26 @@
+version: "3"
+services:
+  auth:
+    image: codinggandalf/k8s-udemy:networking-auth-01
+    build: ./auth-api
+  users:
+    image: codinggandalf/k8s-udemy:networking-users-02
+    build: ./users-api
+    ports: 
+      - "8080:8080"
+  tasks:
+    image: codinggandalf/k8s-udemy:networking-tasks-01
+    build: ./tasks-api
+    ports: 
+      - "8000:8000"
+    environment:
+      TASKS_FOLDER: tasks
+  frontend: 
+    image: codinggandalf/k8s-udemy:networking-frontend-01
+    build: ./frontend
+    ports: 
+      - "80:80"
+    environment:
+      AUTH_HOST: auth-service.udemy:80
+      TASKS_HOST: tasks-service.udemy:8000
+    

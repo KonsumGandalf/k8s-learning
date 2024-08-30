@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: udemy-users
+  namespace: udemy
+  labels:
+    app: udemy-users
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: udemy-users
+  template:
+    metadata:
+      labels:
+        app: udemy-users
+    spec:
+      containers:
+      - name: auth
+        image: codinggandalf/k8s-udemy:networking-auth-01
+        ports:
+        - containerPort: 80
+          name: auth-port
+      - name: users
+        image: codinggandalf/k8s-udemy:networking-users-02
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+          name: users-port
+        envFrom:
+        - configMapRef:
+            name: user-config-map
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: users-service
+  namespace: udemy
+spec:
+  selector:
+    app: udemy-users
+  type: LoadBalancer
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: users-port
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+  namespace: udemy
+spec:
+  selector:
+    app: udemy-users
+  type: ClusterIP
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: auth-port

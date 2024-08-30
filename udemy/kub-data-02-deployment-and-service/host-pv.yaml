@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: host-pv-2
+  namespace: udemy-2
+spec:
+  storageClassName: microk8s-hostpath
+  hostPath:
+    path: /data
+    type: DirectoryOrCreate
+  capacity:
+    storage: 10Mi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: role
+          operator: In
+          values:
+          - edge
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: story-pvc
+  namespace: udemy-2
+spec:
+  storageClassName: microk8s-hostpath
+  volumeName: host-pv-2
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Mi
+
+---

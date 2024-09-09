@@ -1,0 +1,16 @@
+- hosts: all
+  become: true
+  become_method: sudo
+  roles:
+    - role: 'istvano.microk8s'
+      vars:
+        microk8s_plugins:
+          dns: "1.1.1.1"
+          ingress: true
+          metrics-server: true
+          cert-manager: true
+          dashboard: true
+          rbac: true
+          helm: true
+          helm3: true
+          hostpath-storage: true

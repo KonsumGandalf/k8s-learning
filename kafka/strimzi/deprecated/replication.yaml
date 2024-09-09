@@ -1,0 +1,49 @@
+# Define Kafka Mirror Maker for replication between clusters
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaMirrorMaker2
+metadata:
+  name: kafka-mirror-maker2
+  namespace: strimzi
+spec:
+  version: 3.7.0
+  replicas: 1
+  template:
+    connectContainer:
+      env:
+      - name: OTEL_SERVICE_NAME
+        value: kafka-mirror-maker2
+      - name: OTEL_EXPORTER_OTLP_ENDPOINT
+        value: "http://localhost:4317"
+  tracing:
+    type: opentelemetry
+  connectCluster: "kafka-cluster-two"
+  clusters:
+  - alias: "kafka-cluster-one"
+    bootstrapServers: kafka-cluster-one-kafka-bootstrap:9092
+  - alias: "kafka-cluster-two"
+    bootstrapServers: kafka-cluster-two-kafka-bootstrap:9092
+    config:
+      # -1 means it will use the default replication factor configured in the broker
+      config.storage.replication.factor: -1
+      offset.storage.replication.factor: -1
+      status.storage.replication.factor: -1
+  mirrors:
+  - sourceCluster: "kafka-cluster-one"
+    targetCluster: "kafka-cluster-two"
+    sourceConnector:
+      tasksMax: 1
+      config:
+        # -1 means it will use the default replication factor configured in the broker
+        replication.factor: -1
+        offset-syncs.topic.replication.factor: -1
+        sync.topic.acls.enabled: "false"
+        refresh.topics.interval.seconds: 600
+    checkpointConnector:
+      tasksMax: 1
+      config:
+        # -1 means it will use the default replication factor configured in the broker
+        checkpoints.topic.replication.factor: -1
+        sync.group.offsets.enabled: "false"
+        refresh.groups.interval.seconds: 600
+    topicsPattern: ".*"
+    groupsPattern: ".*"

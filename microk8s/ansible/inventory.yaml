@@ -1,0 +1,26 @@
+all:
+  hosts:
+    master:
+      ansible_ssh_host: "localhost"  # Local computer
+      ansible_connection: local
+      ansible_ssh_user: konsum-gandalf
+    worker-1:
+      ansible_ssh_host: "10.66.188.113"
+    worker-2:
+      ansible_ssh_host: "10.66.188.134"
+
+  children:
+    microk8s_HA:
+      hosts:
+        master:
+
+    microk8s_WORKERS:
+      hosts:
+        worker-1:
+        worker-2:
+
+  vars:
+    ansible_ssh_user: ubuntu
+    ansible_ssh_private_key_file: ~/.ssh/multipass_rsa
+    microk8s_version: 1.31/stable
+    ansible_python_interpreter: /usr/bin/python3

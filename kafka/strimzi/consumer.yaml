@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kafka-consumer
+  namespace: kafka
+spec:
+  containers:
+  - name: kafka-consumer
+    image: quay.io/strimzi/kafka:0.43.0-kafka-3.8.0
+    command:
+    - bin/kafka-console-consumer.sh
+    args:
+    - --bootstrap-server
+    - my-cluster-kafka-bootstrap:9092
+    - --topic
+    - my-topic
+    - --from-beginning
+    tty: true
+    stdin: true
+  restartPolicy: Never

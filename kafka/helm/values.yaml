@@ -1,17 +1,20 @@
 externalAccess:
   enabled: true
-  broker:
-    service:
+  service:
+    broker:
       type: LoadBalancer
       ports:
         external: 9094
-    containerPorts:
-      external: 9094
-  controller:
-    service:
+    controller:
       type: LoadBalancer
   autoDiscovery:
     enabled: true
+
+broker:
+  automountServiceAccountToken: true
+
+controller:
+  automountServiceAccountToken: true
 
 persistence:
   size: 2Gi

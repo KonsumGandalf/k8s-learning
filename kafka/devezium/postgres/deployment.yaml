@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: kafka
+  labels:
+    app: kafka
+spec:
+  selector:
+    matchLabels:
+      app: kafka
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: kafka
+    spec:
+      containers:
+      - name: postgres
+        image: quay.io/debezium/example-postgres:3.0.0.Final
+        ports:
+        - containerPort: 5432
+          name: kafka-port
+        env:
+        - name: POSTGRES_DB
+          value: kafka
+        - name: POSTGRES_USER
+          value: kafka
+        - name: POSTGRES_PASSWORD
+          value: kafka
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-service
+  namespace: kafka
+spec:
+  selector:
+    app: kafka
+  ports:
+  - protocol: TCP
+    port: 5432
+    targetPort: kafka-port
+  type: LoadBalancer

@@ -1,0 +1,40 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaConnector
+metadata:
+  name: debezium-jdbc-connector-mysql
+  namespace: kafka
+  labels:
+    strimzi.io/cluster: debezium-connect-cluster-test
+spec:
+  class: io.debezium.connector.jdbc.JdbcSinkConnector
+  tasksMax: 1
+  config:
+    connection.url: jdbc:mysql://mysql.kafka:3306/
+    connection.username: mysqluser
+    connection.password: mysqlpw
+    insert.mode: upsert
+    auto.create: false
+    delete.enabled: true
+    primary.key.mode: record_key
+    database.time_zone: UTC
+    table.name.format: kafka_${topic}
+    topics: movie-topic-avc-2
+    schema.enable: true
+    value.converter.schema.registry.url: schema-registry.kafka:8081
+   #connection.url: jdbc:mysql://mysql.kafka:3306/
+   #connection.username: mysqluser
+   #connection.password: mysqlpw
+   #insert.mode: upsert
+   #auto.create: true
+   #delete.enabled: true
+   #schema.evolution: basic
+   #database.time_zone: UTC
+   #table.name.format: kafka_${topic}
+   #topics: processed.customers.emails-5
+   #schema.enable: true # Set to true if you expect schema in messages
+   #key.converter.schemas.enable: false # No schema in keys
+   #value.converter.schemas.enable: true # Expect schema in values
+   #internal.key.converter: org.apache.kafka.connect.json.JsonConverter
+   #internal.value.converter: org.apache.kafka.connect.json.JsonConverter
+   #key.converter: org.apache.kafka.connect.json.JsonConverter
+   #value.converter: org.apache.kafka.connect.json.JsonConverter

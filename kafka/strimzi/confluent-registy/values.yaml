@@ -1,0 +1,10 @@
+kafka:
+  enabled: false
+  auth:
+    protocol: plaintext
+  service:
+    ports:
+      client: 9092
+externalKafka:
+  brokers:
+    - PLAINTEXT://my-cluster-kafka-bootstrap.kafka:9092

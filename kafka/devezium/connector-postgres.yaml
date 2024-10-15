@@ -1,0 +1,21 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaConnector
+metadata:
+  name: debezium-postgres-connector
+  namespace: kafka
+  labels:
+    strimzi.io/cluster: debezium-connect-cluster-test
+spec:
+  class: io.debezium.connector.postgresql.PostgresConnector
+  tasksMax: 1
+  config:
+    tasks.max: 1
+    database.hostname: postgres-service.kafka # Service name for PostgreSQL
+    database.dbname: kafka # Database name
+    database.port: 5432 # PostgreSQL port
+    database.user: kafka # Directly include the username
+    database.password: kafka # Directly include the password
+    table.include.list: public.students # The name of the table which should be 
+    database.server.name: kafka
+    topic.prefix: newdb
+    include.schema.changes: "true"
